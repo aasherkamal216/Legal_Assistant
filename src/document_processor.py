@@ -10,7 +10,7 @@ class LegalDocumentProcessor:
         self.chunk_size = chunk_size
         self.chunk_overlap = chunk_overlap
         self.text_splitter = CharacterTextSplitter(
-            separators="\n\n",
+            separator="\n\n",
             chunk_size=chunk_size,
             chunk_overlap=chunk_overlap,
             length_function=len,

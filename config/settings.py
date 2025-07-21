@@ -6,8 +6,10 @@ load_dotenv()
 class Settings:
     # OpenAI Configuration
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    OPENAI_MODEL = "gpt-4o"
-    OPENAI_EMBEDDING_MODEL = "text-embedding-3-large"
+    PRIMARY_MODEL = "gpt-4.1"
+    REWRITE_QUERY_MODEL = "gpt-4o-mini"
+    SCORE_DOCUMENTS_MODEL = "gpt-4o-mini"
+    EMBEDDING_MODEL = "text-embedding-3-large"
     
     # Pinecone Configuration
     PINECONE_API_KEY = os.getenv("PINECONE_API_KEY")
@@ -19,7 +21,7 @@ class Settings:
     
     # RAG Configuration
     RETRIEVAL_TOP_K = 5
-    RELEVANCE_THRESHOLD = 7.0
+    RELEVANCE_THRESHOLD = 7
     MAX_RETRIEVAL_ATTEMPTS = 2
     
     # Database

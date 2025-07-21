@@ -9,7 +9,7 @@ import streamlit as st
 class VectorStoreManager:
     def __init__(self):
         self.embeddings = OpenAIEmbeddings(
-            model=settings.OPENAI_EMBEDDING_MODEL,
+            model=settings.EMBEDDING_MODEL,
             openai_api_key=settings.OPENAI_API_KEY
         )
         self._initialize_pinecone()
@@ -45,9 +45,3 @@ class VectorStoreManager:
             index_name=settings.PINECONE_INDEX_NAME,
             embedding=self.embeddings
         )
-    
-    def search_similar_documents(self, query: str, k: int = 5) -> List[Document]:
-        """Search for similar documents"""
-        vector_store = self.get_vector_store()
-        return vector_store.similarity_search(query, k=k)
-    
