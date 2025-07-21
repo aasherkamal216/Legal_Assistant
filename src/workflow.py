@@ -1,5 +1,6 @@
 from langgraph.func import entrypoint
 from langchain_core.messages import BaseMessage, ToolMessage, HumanMessage
+from langgraph.graph.message import add_messages
 
 from .tasks import (
     assistant,
@@ -9,9 +10,13 @@ from .tasks import (
 )
 
 from config.settings import settings
+from pydantic import BaseModel
+
 
 @entrypoint()
-def legal_assistant(messages: list[BaseMessage], is_professional: bool):
+def legal_assistant(assistant_input: dict):
+    messages = assistant_input["messages"]
+    is_professional = assistant_input["is_professional"]
 
     human_message: HumanMessage = messages[-1]
     response = assistant(messages, is_professional).result()
@@ -39,3 +44,5 @@ def legal_assistant(messages: list[BaseMessage], is_professional: bool):
 
         final_response = assistant(messages, is_professional).result()
         return final_response
+
+    return response
