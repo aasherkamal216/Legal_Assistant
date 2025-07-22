@@ -2,7 +2,7 @@
 
 [![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/release/python-3110/)
 
-A RAG-based AI Legal Assistant designed to provide tailored legal information from a private knowledge base. It features an adaptive user interface that tailors responses to different user types, a sophisticated retrieval-scoring-rewriting loop for accuracy, and automatic FAQ generation from user conversations.
+A RAG-based AI Legal Assistant designed to provide tailored legal information from a private knowledge base. It features an adaptive user interface that tailors responses to different user types, a sophisticated retrieval-scoring-rewriting loop for accuracy, and dynamic question suggestions to guide user exploration.
 
 ## ✨ Key Features
 
@@ -13,8 +13,9 @@ A RAG-based AI Legal Assistant designed to provide tailored legal information fr
     1.  **Retrieves** relevant document chunks from a Pinecone vector store.
     2.  **Scores** the relevance of the retrieved context against the user's query.
     3.  **Rewrites** the query and re-retrieves if the initial results are not relevant enough.
-*   **Automatic FAQ Generation**: After a chat session ends, a background process analyzes the conversation to generate and store relevant FAQs in a local SQLite database, improving the knowledge base over time.
-*   **Pinecone Integration**: Leverages Pinecone for efficient and scalable vector similarity search.
+*   **Dynamic "Related Questions"**: After each response, the assistant suggests similar questions stored in the vector database, guiding users to explore related topics.
+*   **Conversation-Driven Question Generation**: After a chat session ends, a background process analyzes the conversation to generate new, relevant questions, which are added to Pinecone to improve future suggestions.
+*   **Pinecone Integration**: Leverages Pinecone for both the primary knowledge base and the storage/retrieval of suggested questions.
 *   **Modular & Extensible**: The codebase is organized into distinct modules for configuration, application logic, and core AI components.
 
 
@@ -22,10 +23,9 @@ A RAG-based AI Legal Assistant designed to provide tailored legal information fr
 
 *   **AI Frameworks**: LangChain, LangGraph
 *   **LLM Provider**: OpenAI
-*   **Vector Database**: Pinecone
+*   **Vector Database**: Pinecone (for knowledge base and question suggestions)
 *   **Web Framework**: Streamlit
-*   **Data Storage**: SQLite (for FAQs)
-*   **Dependencies**: See `pyproject.toml` for the full list.
+*   **Dependencies**: See `pyproject.toml` or `requirements.txt` for the full list.
 
 ## 📁 Project Structure
 
@@ -35,18 +35,18 @@ A RAG-based AI Legal Assistant designed to provide tailored legal information fr
     │   ├── assistant.py      # Main chat interface
     │   └── dashboard.py      # Document management dashboard
     ├── config/               # Configuration files
-    │   ├── database.py       # SQLite database handler for FAQs
     │   └── settings.py       # Project settings and API keys
     ├── src/                  # Core source code for the RAG pipeline
     │   ├── document_processor.py # Handles PDF loading and chunking
-    │   ├── faq_generator.py  # Logic for generating FAQs from conversations
     │   ├── graph.py          # LangGraph agent definition
     │   ├── nodes.py          # Agent nodes (assistant, RAG loop)
     │   ├── prompts.py        # All system and task prompts
+    │   ├── question_generator.py # Logic for generating suggested questions from conversations
     │   ├── tools.py          # Custom tools for the agent (e.g., knowledge base search)
     │   └── vector_store.py   # Manages interaction with Pinecone
-    ├── generate_faqs_task.py # Background script for FAQ generation
-    ├── pyproject.toml        # Project dependencies
+    ├── generate_questions_task.py # Background script for question generation
+    ├── pyproject.toml        # Project metadata and dependencies
+    ├── requirements.txt      # Pinned dependencies for reproducible environments
     ├── README.md             # You are here!
     └── .python-version       # Specifies Python version (3.11)
 ```
@@ -74,8 +74,8 @@ Follow these instructions to set up and run the project locally.
     pip install -r requirements.txt
     ```
 
-4.  **Configure Environment Variables:**
-    Create a `.env` file in the project root directory by copying the example below.
+3.  **Configure Environment Variables:**
+    Create a `.env` file in the project root directory.
     ```sh
     touch .env
     ```
@@ -111,15 +111,22 @@ The chat flow is managed by a `LangGraph` agent defined in `src/graph.py`.
 
 1.  **Initial Call**: The user's query is sent to the `assistant_node`. The model, armed with the `search_knowledge_base` tool, determines that it needs to retrieve information and makes a tool call.
 2.  **RAG Loop (`rag_node`)**:
-    *   **Retrieve**: The `search_knowledge_base` tool (`src/tools.py`) is invoked, performing a similarity search in Pinecone.
+    *   **Retrieve**: The `search_knowledge_base` tool (`src/tools.py`) is invoked, performing a similarity search in Pinecone's default namespace.
     *   **Score**: The retrieved documents are scored for relevance against the original query using a dedicated model and prompt (`src/prompts.py`).
-    *   **Rewrite (if needed)**: If the score is below a `RELEVANCE_THRESHOLD` (defined in `config/settings.py`), the system uses another model to rewrite the original query to be more specific or use better legal terminology. It then re-runs the retrieval. This loop can run up to `MAX_RETRIEVAL_ATTEMPTS`.
-3.  **Generation**: Once relevant context is retrieved, it's passed back to the `assistant_node`. The main model then generates a final, comprehensive answer based on this context, tailored to the selected user type (`is_professional`).
+    *   **Rewrite (if needed)**: If the score is below a `RELEVANCE_THRESHOLD` (defined in `config/settings.py`), the system uses another model to rewrite the original query to be more specific. It then re-runs the retrieval. This loop can run up to `MAX_RETRIEVAL_ATTEMPTS`.
+3.  **Generation**: Once relevant context is retrieved, it's passed back to the `assistant_node`. The main model then generates a final, comprehensive answer based on this context, tailored to the selected user type.
 
-### Automatic FAQ Generation
+### Dynamic "Related Questions" Feature
 
-When a user ends a chat, the full conversation history is saved to a temporary JSON file. A non-blocking background process is launched, executing `generate_faqs_task.py`. This script:
-1.  Loads the conversation history.
-2.  Uses an LLM with a specialized prompt (`FAQ_PROMPT`) to identify key questions and answers.
-3.  Parses the structured output and stores the new FAQs in the `database/faqs.db` SQLite database using `config/database.py`. Existing questions have their frequency count incremented.
-4.  These FAQs are then displayed on the main welcome screen of the chat app.
+To guide users, the assistant displays relevant follow-up questions.
+1.  After the RAG pipeline generates an answer, the `assistant.py` app takes the user's most recent query.
+2.  It performs a vector similarity search against a dedicated `faq-questions` namespace in Pinecone using `vector_store.get_similar_faq_questions()`.
+3.  The top matching questions are displayed to the user as clickable buttons, providing an intuitive way to explore related topics.
+
+### Conversation-Driven Question Generation
+
+The system improves its question suggestion capability by learning from user interactions.
+1.  When a user ends a chat, `assistant.py` saves the conversation history to a temporary JSON file.
+2.  A non-blocking background process is launched, executing `generate_questions_task.py`.
+3.  This script loads the conversation and uses the `QuestionGenerator` (`src/question_generator.py`) with a specialized prompt (`SUGGESTED_QUESTIONS_PROMPT`) to formulate new, relevant questions.
+4.  The `VectorStoreManager` then vectorizes these questions and adds them to the `faq-questions` namespace in the Pinecone index, making them available for future user sessions.
