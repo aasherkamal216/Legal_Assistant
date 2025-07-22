@@ -7,7 +7,7 @@ class Settings:
     # OpenAI Configuration
     OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-    PRIMARY_MODEL = "gpt-4o"
+    PRIMARY_MODEL = "gpt-4o-mini"
     REWRITE_QUERY_MODEL = "gpt-4o-mini"
     SCORE_DOCUMENTS_MODEL = "gpt-4o-mini"
     EMBEDDING_MODEL = "text-embedding-3-large"
@@ -25,9 +25,8 @@ class Settings:
     RELEVANCE_THRESHOLD = 7
     MAX_RETRIEVAL_ATTEMPTS = 2
     
-    # Database
-    DATABASE_PATH = "database/faqs.db"
-    
+    PINECONE_FAQ_NAMESPACE = "faq-questions"
+
     # Streamlit Configuration
     PAGE_TITLE = "Legal AI Assistant"
     PAGE_ICON = "⚖️"
