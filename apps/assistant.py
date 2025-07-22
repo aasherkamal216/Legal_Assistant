@@ -109,9 +109,9 @@ def display_chat_interface():
 
                 # 1. Define a generator function to yield tokens from the LangGraph stream
                 def stream_generator(input_data):
-                    for chunk, _ in legal_assistant.stream(input_data, stream_mode="messages"):
+                    for chunk, metadata in legal_assistant.stream(input_data, stream_mode="messages"):
                         # We are interested in the content of AIMessageChunk objects
-                        if isinstance(chunk, AIMessageChunk) and chunk.content:
+                        if metadata.get("langgraph_node") == "assistant" and chunk.content:
                             yield chunk.content
                 
                 # 2. Use st.write_stream to render the output in real-time
