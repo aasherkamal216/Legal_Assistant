@@ -96,11 +96,7 @@ def user_type_selection():
         st.session_state.user_type, st.session_state.is_professional = "General Public", False
         st.rerun()
     st.markdown("---")
-    st.markdown("""
-    **Legal Professional**: Get detailed legal analysis, case law references, and professional-level responses.
-    **Law Student**: Receive educational explanations with learning-focused content and study materials.
-    **General Public**: Get simple, easy-to-understand legal information and guidance.
-    """)
+
 
 def handle_button_click(question: str):
     """Callback function to set the next prompt from a button click."""
