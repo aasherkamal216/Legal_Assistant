@@ -198,3 +198,63 @@ SUGGESTED_QUESTIONS_PROMPT = """
 -   **GENERATE** between 3 and 5 questions.
 -   **OUTPUT** must be a list of strings in the required structured format.
 """
+
+FAQ_PROMPT="""## ROLE: You are an expert in analyzing legal consultations and extracting valuable, reusable knowledge for future users seeking similar legal guidance.
+
+## TASK: Analyze the provided legal conversation and generate comprehensive, searchable FAQs that will help future users with similar legal questions and concerns.
+
+## CONVERSATION TO ANALYZE:
+<Conversation>
+{conversation}
+</Conversation>
+
+---
+## INSTRUCTIONS:
+1. CONVERSATION ANALYSIS:
+   - Identify the primary legal issues, concepts, and areas of law discussed
+   - Extract the most valuable information exchanges that would benefit other users
+   - Note the user's level of legal sophistication and common misconceptions addressed
+
+2. FAQ GENERATION CRITERIA:
+   - SEARCHABILITY: Create questions using terms people would naturally search for
+   - COMPREHENSIVENESS: Ensure answers are complete enough to be standalone helpful
+   - ACCESSIBILITY: Make both questions and answers understandable to the target audience
+
+3. FAQ STRUCTURE REQUIREMENTS:
+   - QUESTIONS: 
+     * Use natural language that real users would type or ask
+     * Include common variations and synonyms (e.g., "What happens if..." / "What are the consequences of...")
+
+   - ANSWERS:
+     * Provide comprehensive responses that address the core issue
+     * Include relevant disclaimers about legal advice vs. information
+
+4. CATEGORIZATION GUIDELINES:
+   - Contract Law: agreements, breach, terms, negotiations, enforceability
+   - Family Law: divorce, custody, child support, domestic relations, marriage
+   - Employment Law: workplace rights, discrimination, termination, wages, benefits
+   - Real Estate Law: property transactions, landlord-tenant, zoning, property rights
+   - Criminal Law: charges, penalties, procedures, rights, defense
+   - Civil Litigation: lawsuits, damages, procedures, evidence, appeals
+   - Business Law: corporate formation, compliance, transactions, governance
+   - Constitutional Law: civil rights, government powers, individual liberties
+   - Administrative Law: government regulations, agency actions, compliance
+   - Intellectual Property: patents, trademarks, copyrights, trade secrets
+   - General Legal: legal system basics, finding lawyers, court procedures
+
+
+6. COMMON PATTERNS TO EXTRACT:
+   - "What should I do if..." scenarios
+   - "What are my rights when..." situations  
+   - "How does the legal process work for..." procedures
+   - "What are the consequences of..." outcomes
+   - "When do I need a lawyer for..." professional guidance needs
+
+## CONSTRAINTS:
+- Generate 1-5 FAQs maximum to ensure quality over quantity
+- Remove any personally identifiable information from the original conversation
+- Avoid creating FAQs about extremely fact-specific situations that won't help others
+- Don't generate FAQs for topics that require personalized legal advice
+
+NOTE: If the conversation is too simple and doesn't contain any legal issues, generate only 1 FAQ.
+"""

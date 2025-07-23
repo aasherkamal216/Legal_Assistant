@@ -25,6 +25,7 @@ class Settings:
     RELEVANCE_THRESHOLD = 7
     MAX_RETRIEVAL_ATTEMPTS = 2
     
+    DATABASE_PATH = "database/faqs.db"
     PINECONE_FAQ_NAMESPACE = "faq-questions"
 
     # Streamlit Configuration
