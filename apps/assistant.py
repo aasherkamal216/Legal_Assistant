@@ -90,7 +90,7 @@ def end_chat_and_reset():
 
 def display_faq_page():
     st.title("💡 Frequently Asked Questions")
-    if st.button("⬅️ Back to Home"):
+    if st.button("⬅ Back to Home", type="primary"):
         st.session_state.viewing_faqs = False
         st.rerun()
     
