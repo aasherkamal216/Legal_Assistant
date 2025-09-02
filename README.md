@@ -4,6 +4,7 @@
 
 A RAG-based AI Legal Assistant designed to provide tailored legal information from a private knowledge base. It features an adaptive user interface, a sophisticated retrieval-scoring-rewriting loop for accuracy, dynamic question suggestions, and a self-improving FAQ system.
 
+![Assistant Chat](public/assistant_chat.png)
 ## ✨ Key Features
 
 *   **Interactive Chat Interface**: A user-friendly chat application built with Streamlit.
@@ -104,12 +105,14 @@ You can run two separate Streamlit applications. It's recommended to run them in
     ```
     Navigate to the URL provided by Streamlit (usually `http://localhost:8501`) to upload your documents. This step is crucial for populating the knowledge base.
 
+![Dashboard](public/dashboard.png)
 2.  **Run the Legal Assistant Chat App:**
     ```sh
     python -m streamlit run apps/assistant.py
     ```
     Navigate to the URL provided (usually `http://localhost:8502` if the dashboard is still running) to interact with the assistant.
 
+![Assistant](public/assistant_home.png)
 ## ⚙️ How It Works
 
 ### RAG Chat Flow
