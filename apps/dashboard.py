@@ -1,7 +1,7 @@
 import streamlit as st
 import os
-from src.document_processor import LegalDocumentProcessor
-from src.vector_store import VectorStoreManager
+from ..src.document_processor import LegalDocumentProcessor
+from ..src.vector_store import VectorStoreManager
 from config.settings import settings
 
 def main():

@@ -1,7 +1,7 @@
 import streamlit as st
 from langchain_core.messages import HumanMessage, AIMessage
-from src.graph import legal_assistant
-from src.vector_store import VectorStoreManager
+from ..src.graph import legal_assistant
+from ..src.vector_store import VectorStoreManager
 from config.database import FAQDatabase
 from config.settings import settings
 import subprocess
