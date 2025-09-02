@@ -1,3 +1,6 @@
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 import streamlit as st
 from langchain_core.messages import HumanMessage, AIMessage
 from src.graph import legal_assistant
@@ -10,9 +13,6 @@ import os
 import uuid
 import sys
 from collections import defaultdict
-
-import sys, os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Page configuration
 st.set_page_config(
